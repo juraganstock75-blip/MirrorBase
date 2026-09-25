@@ -1,0 +1,52 @@
+# ============================================================
+# Banten-Exploiter — .htaccess
+# ============================================================
+
+Options -Indexes
+
+# ============================================================
+# REWRITE — /mirror.php/id/<7digit> → mirror.php?id=<7digit>
+# ============================================================
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+
+  # /mirror.php/id/1234567 → mirror.php?id=1234567
+  RewriteRule ^mirror\.php/id/([0-9]{7})/?$ mirror.php?id=$1 [L,QSA]
+
+  # /mirror/id/1234567 → mirror.php?id=1234567
+  RewriteRule ^mirror/id/([0-9]{7})/?$      mirror.php?id=$1 [L,QSA]
+
+  # /mirror/1234567 → mirror.php?id=1234567
+  RewriteRule ^mirror/([0-9]{7})/?$         mirror.php?id=$1 [L,QSA]
+</IfModule>
+
+# ============================================================
+# BLOKIR FOLDER INTERNAL
+# ============================================================
+RedirectMatch 403 ^/config/.*$
+RedirectMatch 403 ^/includes/.*$
+RedirectMatch 403 ^/tools/.*$
+RedirectMatch 403 ^/storage/.*$
+RedirectMatch 403 ^/uploads/geoip_cache/.*$
+
+# ============================================================
+# BLOKIR FILE SENSITIF
+# ============================================================
+<FilesMatch "^(db\.php|security\.php|geoip\.php|country_names\.php|functions\.php|keys\.json|\.env|\.gitignore|composer\.(json|lock))$">
+  Require all denied
+</FilesMatch>
+
+# ============================================================
+# MATIIN EKSEKUSI PHP DI UPLOADS
+# ============================================================
+<FilesMatch "\.(php|phtml|phar|pl|py|cgi|asp|aspx|jsp|sh)$">
+  <If "%{REQUEST_URI} =~ m#^/uploads/#">
+    Require all denied
+  </If>
+</FilesMatch>
+
+# ============================================================
+# CHARSET
+# ============================================================
+AddDefaultCharset UTF-8
